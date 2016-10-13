@@ -3,21 +3,24 @@
  * attendance record if one is not found
  * within localStorage.
  */
+var days = 12;
+
 (function() {
     if (!localStorage.attendance) {
         console.log('Creating attendance records...');
+
+        var names = ['Slappy the Frog', 'Lilly the Lizard',
+            'Paulrus the Walrus', 'Gregory the Goat', 'Adam the Anaconda'];
+
         function getRandom() {
             return (Math.random() >= 0.5);
         }
 
-        var nameColumns = $('tbody .name-col'),
-            attendance = {};
+        var attendance = {};
 
-        nameColumns.each(function() {
-            var name = this.innerText;
+        names.forEach(function(name) {
             attendance[name] = [];
-
-            for (var i = 0; i <= 11; i++) {
+            for (var i = 0; i < days; i++) {
                 attendance[name].push(getRandom());
             }
         });
@@ -32,6 +35,27 @@ var model = {
 
     init: function() {
         this.attendance = JSON.parse(localStorage.attendance);
+
+        // Create HTML table header
+        var tableHead = document.getElementsByTagName('thead')[0];
+        var htmlString = `<tr><th class="name-col">Student Name</th>`;
+        for (var i = 0; i < days; i++) {
+            htmlString += `<th>${i + 1}</th>`;
+        }
+        htmlString += '<th class="missed-col">Days Missed</th></tr>';
+        tableHead.innerHTML = htmlString;
+
+        // Create HTML table of students
+        var tableBody = document.getElementById('table-body');
+        htmlString = '';
+        for (var student in this.attendance) {
+            htmlString += `<tr class="student"><td class="name-col">${student}</td>`;
+            this.attendance[student].forEach(function(day) {
+                htmlString += '<td class="attend-col"><input type="checkbox"></td>';
+            });
+            htmlString += `<td class="missed-col">0</td></tr>`;
+        }
+        tableBody.innerHTML = htmlString;
     }
 };
 
